@@ -14,7 +14,6 @@
   <!-- MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
-  <!-- Diseño de los botones -->
   <style>
     * {
       box-sizing: border-box;
@@ -26,7 +25,7 @@
       overflow: hidden;
     }
 
-    /* Interfaz superpuesta a la cámara */
+    /* Interfaz sobre la cámara */
     #interface {
       position: fixed;
       inset: 0;
@@ -41,14 +40,14 @@
       pointer-events: auto;
     }
 
-    /* Escena 1: botón inferior derecho */
+    /* Escena 1 */
     #scene1 {
       display: block;
       right: 18px;
       bottom: 30px;
     }
 
-    /* Escena 2: botones a la izquierda */
+    /* Escena 2 */
     #scene2 {
       left: 12px;
       top: 50%;
@@ -56,7 +55,7 @@
       width: 165px;
     }
 
-    /* Flecha inferior derecha */
+    /* Botón continuar */
     #nextButton {
       right: 18px;
       bottom: 30px;
@@ -102,7 +101,7 @@
 
 <body>
 
-  <!-- INTERFAZ DE LA APLICACIÓN -->
+  <!-- INTERFAZ -->
 
   <div id="interface">
 
@@ -134,8 +133,9 @@
 
     </div>
 
-    <!-- FLECHA PARA CONTINUAR -->
-    <button id="nextButton" class="panel"
+    <!-- FLECHA -->
+    <button id="nextButton"
+            class="panel"
             aria-label="Continuar">
       →
     </button>
@@ -155,92 +155,133 @@
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: false">
 
-    <!-- CARGA DE IMÁGENES -->
-<a-assets timeout="15000">
-  
-<a-assets>
+    <!-- CARGA DE IMÁGENES: UN SOLO BLOQUE -->
 
-  <img id="sketch"
-       src="Imagenes/boceto.png">
+    <a-assets timeout="30000">
 
-  <img id="composition"
-       src="Imagenes/composici%C3%B3n.png">
+      <img id="sketch"
+           src="Imagenes/boceto.png">
 
-  <img id="shapes"
-       src="Imagenes/formas.png">
+      <img id="composition" src="Imagenes/composicion.png">
 
-  <img id="proportions"
-       src="Imagenes/proporciones.png">
+      <img id="shapes"
+           src="Imagenes/formas.png">
 
-  <img id="perspective"
-       src="Imagenes/perspectiva.png">
+      <img id="proportions"
+           src="Imagenes/proporciones.png">
 
-</a-assets>
+      <img id="perspective"
+           src="Imagenes/perspectiva.png">
+
+    </a-assets>
+
 
     <!-- CÁMARA -->
+
     <a-camera
       position="0 0 0"
       look-controls="enabled: false">
     </a-camera>
 
+
     <!-- MARCADOR RECONOCIDO -->
+
     <a-entity
       id="target"
       mindar-image-target="targetIndex: 0">
 
       <!-- ESCENA 1: SIN IMAGEN DIGITAL -->
 
+
       <!-- ESCENA 2: BOCETO -->
-     <a-plane
-  id="sketchLayer"
-  width="1"
-  height="1.5"
-  position="0 0 0.01"
-  material="shader: flat; src: #sketch; color: #FFFFFF; side: double"
-  visible="false">
-</a-plane>
+
+      <a-plane
+        id="sketchLayer"
+        src="#sketch"
+        width="1"
+        height="1.5"
+        position="0 0 0.01"
+        material="
+          shader: flat;
+          transparent: false;
+          side: double;
+        "
+        visible="false">
+      </a-plane>
+
 
       <!-- CAPA: COMPOSICIÓN -->
+
       <a-plane
         id="compositionLayer"
         src="#composition"
         width="1"
         height="1.5"
         position="0 0 0.02"
-        material="shader: flat; transparent: true; depthWrite: false"
+        material="
+          shader: flat;
+          transparent: true;
+          alphaTest: 0.01;
+          depthWrite: false;
+          side: double;
+        "
         visible="false">
       </a-plane>
 
+
       <!-- CAPA: FORMAS -->
+
       <a-plane
         id="shapesLayer"
         src="#shapes"
         width="1"
         height="1.5"
         position="0 0 0.03"
-        material="shader: flat; transparent: true; depthWrite: false"
+        material="
+          shader: flat;
+          transparent: true;
+          alphaTest: 0.01;
+          depthWrite: false;
+          side: double;
+        "
         visible="false">
       </a-plane>
 
+
       <!-- CAPA: PROPORCIONES -->
+
       <a-plane
         id="proportionsLayer"
         src="#proportions"
         width="1"
         height="1.5"
         position="0 0 0.04"
-        material="shader: flat; transparent: true; depthWrite: false"
+        material="
+          shader: flat;
+          transparent: true;
+          alphaTest: 0.01;
+          depthWrite: false;
+          side: double;
+        "
         visible="false">
       </a-plane>
 
+
       <!-- CAPA: PERSPECTIVA -->
+
       <a-plane
         id="perspectiveLayer"
         src="#perspective"
         width="1"
         height="1.5"
         position="0 0 0.05"
-        material="shader: flat; transparent: true; depthWrite: false"
+        material="
+          shader: flat;
+          transparent: true;
+          alphaTest: 0.01;
+          depthWrite: false;
+          side: double;
+        "
         visible="false">
       </a-plane>
 
@@ -254,9 +295,6 @@
   <script>
 
     const target = document.querySelector("#target");
-    document.querySelector("a-assets").addEventListener("loaded", () => {
-  console.log("Todas las imágenes se han cargado correctamente");
-});
 
     const interfaceUI =
       document.querySelector("#interface");
@@ -275,33 +313,31 @@
 
     let currentScene = 1;
 
-    const layerNames = [
-      "composition",
-      "shapes",
-      "proportions",
-      "perspective"
-    ];
 
-
-    // MOSTRAR LA INTERFAZ AL RECONOCER LA IMAGEN
+    // MOSTRAR INTERFAZ AL RECONOCER LA ILUSTRACIÓN
 
     target.addEventListener("targetFound", () => {
 
       interfaceUI.style.display = "block";
 
       if (currentScene === 1) {
-        scene1.style.display = "block";
-      }
 
-      if (currentScene === 2) {
+        scene1.style.display = "block";
+        scene2.style.display = "none";
+        nextButton.style.display = "none";
+
+      } else {
+
+        scene1.style.display = "none";
         scene2.style.display = "block";
         nextButton.style.display = "block";
+
       }
 
     });
 
 
-    // OCULTAR LA INTERFAZ SI SE PIERDE EL MARCADOR
+    // OCULTAR INTERFAZ AL PERDER EL MARCADOR
 
     target.addEventListener("targetLost", () => {
 
@@ -310,7 +346,7 @@
     });
 
 
-    // PASAR DE ESCENA 1 A ESCENA 2
+    // PASAR A ESCENA 2
 
     document.querySelector("#startScene2")
       .addEventListener("click", () => {
@@ -318,9 +354,7 @@
         currentScene = 2;
 
         scene1.style.display = "none";
-
         scene2.style.display = "block";
-
         nextButton.style.display = "block";
 
         sketch.setAttribute("visible", true);
@@ -345,7 +379,10 @@
 
           layer.setAttribute("visible", !isVisible);
 
-          button.classList.toggle("active", !isVisible);
+          button.classList.toggle(
+            "active",
+            !isVisible
+          );
 
         });
 
