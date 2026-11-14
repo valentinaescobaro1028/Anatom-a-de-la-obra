@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>Anatomía de una obra</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- Diseño de los botones -->
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Interfaz superpuesta a la cámara */
+    #interface {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      display: none;
+    }
+
+    .panel {
+      display: none;
+      position: absolute;
+      pointer-events: auto;
+    }
+
+    /* Escena 1: botón inferior derecho */
+    #scene1 {
+      display: block;
+      right: 18px;
+      bottom: 30px;
+    }
+
+    /* Escena 2: botones a la izquierda */
+    #scene2 {
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 165px;
+    }
+
+    /* Flecha inferior derecha */
+    #nextButton {
+      right: 18px;
+      bottom: 30px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 25px;
+    }
+
+    button {
+      background: #174f43;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 22px;
+      padding: 12px 14px;
+      margin: 5px 0;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    button:active,
+    button.active {
+      background: #b1a16a;
+      color: #172c27;
+    }
+
+    #scene2 button {
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+
+    /* Escena AR */
+    a-scene {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- INTERFAZ DE LA APLICACIÓN -->
+
+  <div id="interface">
+
+    <!-- ESCENA 1 -->
+    <div id="scene1" class="panel">
+      <button id="startScene2">
+        Ver anatomía
+      </button>
+    </div>
+
+    <!-- ESCENA 2 -->
+    <div id="scene2" class="panel">
+
+      <button data-layer="composition">
+        Guías de composición
+      </button>
+
+      <button data-layer="shapes">
+        Formas básicas
+      </button>
+
+      <button data-layer="proportions">
+        Proporciones
+      </button>
+
+      <button data-layer="perspective">
+        Perspectiva
+      </button>
+
+    </div>
+
+    <!-- FLECHA PARA CONTINUAR -->
+    <button id="nextButton" class="panel"
+            aria-label="Continuar">
+      →
+    </button>
+
+  </div>
+
+
+  <!-- EXPERIENCIA DE REALIDAD AUMENTADA -->
+
+  <a-scene
+    mindar-image="
+      imageTargetSrc: targets/ilustracion.mind;
+      autoStart: true;
+    "
+    color-space="sRGB"
+    renderer="colorManagement: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <!-- CARGA DE IMÁGENES -->
+<a-assets>
+
+  <img id="sketch"
+       src="imagenes/boceto.png">
+
+  <img id="composition"
+       src="imagenes/composici%C3%B3n.png">
+
+  <img id="shapes"
+       src="imagenes/formas.png">
+
+  <img id="proportions"
+       src="imagenes/proporciones.png">
+
+  <img id="perspective"
+       src="imagenes/perspectiva.png">
+
+</a-assets>
+
+    <!-- CÁMARA -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <!-- MARCADOR RECONOCIDO -->
+    <a-entity
+      id="target"
+      mindar-image-target="targetIndex: 0">
+
+      <!-- ESCENA 1: SIN IMAGEN DIGITAL -->
+
+      <!-- ESCENA 2: BOCETO -->
+      <a-plane
+  id="sketchLayer"
+  src="#sketch"
+  width="1"
+  height="1.5"
+  position="0 0 0.01"
+  material="shader: flat; transparent: false; side: double; color: #FFFFFF"
+  visible="false">
+</a-plane>
+
+      <!-- CAPA: COMPOSICIÓN -->
+      <a-plane
+        id="compositionLayer"
+        src="#composition"
+        width="1"
+        height="1.5"
+        position="0 0 0.02"
+        material="shader: flat; transparent: true; depthWrite: false"
+        visible="false">
+      </a-plane>
+
+      <!-- CAPA: FORMAS -->
+      <a-plane
+        id="shapesLayer"
+        src="#shapes"
+        width="1"
+        height="1.5"
+        position="0 0 0.03"
+        material="shader: flat; transparent: true; depthWrite: false"
+        visible="false">
+      </a-plane>
+
+      <!-- CAPA: PROPORCIONES -->
+      <a-plane
+        id="proportionsLayer"
+        src="#proportions"
+        width="1"
+        height="1.5"
+        position="0 0 0.04"
+        material="shader: flat; transparent: true; depthWrite: false"
+        visible="false">
+      </a-plane>
+
+      <!-- CAPA: PERSPECTIVA -->
+      <a-plane
+        id="perspectiveLayer"
+        src="#perspective"
+        width="1"
+        height="1.5"
+        position="0 0 0.05"
+        material="shader: flat; transparent: true; depthWrite: false"
+        visible="false">
+      </a-plane>
+
+    </a-entity>
+
+  </a-scene>
+
+
+  <!-- CONTROL DE LAS ESCENAS -->
+
+  <script>
+
+    const target = document.querySelector("#target");
+    document.querySelector("a-assets").addEventListener("loaded", () => {
+  console.log("Todas las imágenes se han cargado correctamente");
+});
+
+    const interfaceUI =
+      document.querySelector("#interface");
+
+    const scene1 =
+      document.querySelector("#scene1");
+
+    const scene2 =
+      document.querySelector("#scene2");
+
+    const nextButton =
+      document.querySelector("#nextButton");
+
+    const sketch =
+      document.querySelector("#sketchLayer");
+
+    let currentScene = 1;
+
+    const layerNames = [
+      "composition",
+      "shapes",
+      "proportions",
+      "perspective"
+    ];
+
+
+    // MOSTRAR LA INTERFAZ AL RECONOCER LA IMAGEN
+
+    target.addEventListener("targetFound", () => {
+
+      interfaceUI.style.display = "block";
+
+      if (currentScene === 1) {
+        scene1.style.display = "block";
+      }
+
+      if (currentScene === 2) {
+        scene2.style.display = "block";
+        nextButton.style.display = "block";
+      }
+
+    });
+
+
+    // OCULTAR LA INTERFAZ SI SE PIERDE EL MARCADOR
+
+    target.addEventListener("targetLost", () => {
+
+      interfaceUI.style.display = "none";
+
+    });
+
+
+    // PASAR DE ESCENA 1 A ESCENA 2
+
+    document.querySelector("#startScene2")
+      .addEventListener("click", () => {
+
+        currentScene = 2;
+
+        scene1.style.display = "none";
+
+        scene2.style.display = "block";
+
+        nextButton.style.display = "block";
+
+        sketch.setAttribute("visible", true);
+
+      });
+
+
+    // ACTIVAR Y DESACTIVAR LAS CAPAS
+
+    document.querySelectorAll("[data-layer]")
+      .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+          const name = button.dataset.layer;
+
+          const layer =
+            document.querySelector("#" + name + "Layer");
+
+          const isVisible =
+            layer.getAttribute("visible");
+
+          layer.setAttribute("visible", !isVisible);
+
+          button.classList.toggle("active", !isVisible);
+
+        });
+
+      });
+
+
+    // FLECHA PARA LA FUTURA ESCENA 3
+
+    nextButton.addEventListener("click", () => {
+
+      alert("Aquí conectaremos la escena 3.");
+
+    });
+
+  </script>
+
+</body>
+</html>
